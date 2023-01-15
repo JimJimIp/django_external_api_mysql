@@ -1,0 +1,98 @@
+Django - get data from external api (தமிழ்)
+techvill
+
+https://www.youtube.com/watch?v=swFomudMdAA
+
+https://datausa.io/about/api/
+https://datausa.io/api/data?drilldowns=Nation&measures=Population
+
+
+👈👇👉 🟡🔴🟢 👈👇👉 🟡🔴🟢 👈👇👉 🟡🔴🟢 
+
+pip install django==4.0.8
+pip install requests==2.28.2
+
+python manage.py createsuperuser
+
+admin
+admin123
+
+main > models.py
+
+from django.db import models
+
+# Create your models here.
+class Population(models.Model):
+    country = models.CharField(max_length=100)
+    year = models.PositiveSmallIntegerField()
+    human_count = models.PositiveBigIntegerField()
+    
+    # def __str__(self) -> str:
+    #     return f"{self.country} => {self.year} => {self.human_count}"
+
+    
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+
+main > views.py
+
+from django.shortcuts import render
+from main.models import Population
+
+import requests
+# Create your views here.
+
+
+def get_population():
+    url = "https://datausa.io/api/data?drilldowns=Nation&measures=Population"
+
+    response = requests.get(url)
+    data = response.json()["data"]
+    #? print(data)
+    
+    for country in data:
+        if Population.objects.filter(country=country["Nation"], year=country["year"]).exists():
+        
+            Population.objects.create(country=country["Nation"], year=country["Year"], human_count=country["Population"])
+            print("saved")
+        
+        
+    
+
+
+zsh Terminal
+python manage.py shell
+
+>>> from main.views import get_population
+>>> get_population()
+
+(8:34)
+
+
+
+
+…or create a new repository on the command line
+echo "# django_external_api_mysql" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/JimJimIp/django_external_api_mysql.git
+git push -u origin main
+
+
+
+…or push an existing repository from the command line
+git remote add origin https://github.com/JimJimIp/django_external_api_mysql.git
+git branch -M main
+git push -u origin main
+
+
+
+
+
+
+
